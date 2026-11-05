@@ -4,9 +4,9 @@
 Объединены исправленные примеры разделов 2.1–2.6 и 3.1.
 Все классы и функции находятся в одном модуле: никакие соседние .py файлы не требуются.
 
-Запуск из PyCharm: Run 'Lecture05_All_In_One' → выбрать пункт 1–7 или 8.
-Командная строка: python Lecture05_All_In_One.py --all
-                   python Lecture05_All_In_One.py --tests
+Запуск из PyCharm: Run 'Lecture' → выбрать пункт 1–7 или 8.
+Командная строка: python Lecture.py --all
+                   python Lecture.py --tests
 
 При выборе этапа 2.5 создаётся папка deploy с копией этого файла и config.json.
 """
@@ -311,14 +311,15 @@ class DeploymentManager:
     def __init__(self, project_path: str, deploy_path: str):
         self.project_path = Path(project_path)
         self.deploy_path = Path(deploy_path)
+        self.source_file = Path(__file__).name
 
     def validate_environment(self) -> bool:
         print("Проверка окружения...")
         if sys.version_info < (3, 8):
             print("Ошибка: нужен Python 3.8 или новее")
             return False
-        if not (self.project_path / "Lecture05_All_In_One.py").is_file():
-            print("Ошибка: не найден Lecture05_All_In_One.py")
+        if not (self.project_path / self.source_file).is_file():
+            print(f"Ошибка: не найден {self.source_file}")
             return False
         print("✓ Окружение проверено успешно")
         return True
@@ -333,8 +334,8 @@ class DeploymentManager:
         try:
             self.deploy_path.mkdir(parents=True, exist_ok=True)
             shutil.copy2(
-                self.project_path / "Lecture05_All_In_One.py",
-                self.deploy_path / "Lecture05_All_In_One.py",
+                self.project_path / self.source_file,
+                self.deploy_path / self.source_file,
             )
             config = {
                 "database_path": str(self.deploy_path / "tasks.db"),
@@ -354,7 +355,7 @@ class DeploymentManager:
         print("Запуск тестов из развёрнутого файла...")
         try:
             result = subprocess.run(
-                [sys.executable, str(self.deploy_path / "Lecture05_All_In_One.py"), "--tests"],
+                [sys.executable, str(self.deploy_path / self.source_file), "--tests"],
                 cwd=self.deploy_path,
                 capture_output=True,
                 text=True,
