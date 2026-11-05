@@ -1,0 +1,9 @@
+.idea/
+__pycache__/
+*.pyc
+.venv/
+venv/
+deploy/
+tasks_data.json
+time_report.csv
+reward_report.csv
